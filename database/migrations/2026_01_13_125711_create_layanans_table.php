@@ -11,20 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('layanans', function (Blueprint $table) {
-            $table->id();
+       Schema::create('layanans', function (Blueprint $table) {
+    $table->id();
 
-            // nama layanan (contoh: Cuci Basah, Cuci Kering)
-            $table->string('nama_layanan');
+    $table->string('nama_layanan', 100);
 
-            // jenis cucian (pakaian, selimut, karpet, dll)
-            $table->string('jenis_cucian');
+    $table->enum('jenis_cucian', [
+        'reguler',
+        'kering',
+        'setrika',
+        'cuci_setrika',
+        'express'
+    ])->nullable(); // ✅ DI SINI
 
-            // harga per kg
-            $table->integer('harga');
+    $table->unsignedInteger('harga');
 
-            $table->timestamps();
-        });
+    $table->timestamps();
+});
+
     }
 
     /**

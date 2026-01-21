@@ -1,16 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransaksiController;
-
+use App\Http\Controllers\PembayaranController; // Controller customer
 use App\Http\Controllers\Admin\PesananAdminController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\LayananController;
-use App\Http\Controllers\Admin\PembayaranController;
+use App\Http\Controllers\Admin\PembayaranController as AdminPembayaranController; // Controller admin
 use App\Http\Controllers\Admin\StrukController;
-
+use App\Http\Controllers\Admin\TransaksiController as AdminTransaksiController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
@@ -42,61 +41,51 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 */
 Route::middleware('auth')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | CUSTOMER
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->name('dashboard');
+    // ================= CUSTOMER =================
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
-    Route::get('/transaksi/create', [TransaksiController::class, 'create'])->name('transaksi.create');
-    Route::post('/transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
-    Route::get('/transaksi/{id}', [TransaksiController::class, 'show'])->name('transaksi.show');
+    Route::resource('transaksi', TransaksiController::class)
+        ->only(['index', 'create', 'store', 'show']);
 
     Route::get('/pembayaran', [PembayaranController::class, 'index'])
         ->name('pembayaran.index');
 
+    // ================= ADMIN =================
+    Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | ADMIN ONLY
-    |--------------------------------------------------------------------------
-    */
-    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
-
-        // DASHBOARD
+        // DASHBOARD ADMIN
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('dashboard');
 
-        // LAYANAN
+        // LAYANAN ADMIN (FULL CRUD)
         Route::resource('layanan', LayananController::class);
 
-        // PESANAN
-        Route::get('/pesanan', [PesananAdminController::class, 'index'])
-            ->name('pesanan');
+        // TRANSAKSI ADMIN
+        Route::resource('transaksi', AdminTransaksiController::class);
 
-        Route::post('/pesanan/{id}/status',
-            [PesananAdminController::class, 'updateStatus']
-        )->name('pesanan.status');
+        // PESANAN ADMIN
+        Route::get('/pesanan', [PesananAdminController::class, 'index'])->name('pesanan');
+        Route::post('/pesanan/{id}/status', [PesananAdminController::class, 'updateStatus'])->name('pesanan.status');
 
-        // PEMBAYARAN
-        Route::get('/pembayaran', [PembayaranController::class, 'index'])
-            ->name('pembayaran');
+        // PEMBAYARAN ADMIN
+        // 1️⃣ POST route bayar transaksi harus sebelum resource
+        Route::post('/pembayaran/{id}/bayar', [AdminPembayaranController::class, 'bayar'])
+            ->name('pembayaran.bayar');
+
+        // 2️⃣ Resource pembayaran (hanya index & show)
+        Route::resource('pembayaran', AdminPembayaranController::class)
+            ->only(['index', 'show'])
+            ->names([
+                'index' => 'pembayaran.index',
+                'show'  => 'pembayaran.show',
+            ]);
 
         // STRUK
-        Route::get('/pesanan/{id}/struk',
-            [PembayaranController::class, 'struk']
-        )->name('struk');
-
-        Route::get('/pesanan/{id}/struk-pdf',
-            [StrukController::class, 'pdf']
-        )->name('struk.pdf');
+        Route::get('/pesanan/{id}/struk', [AdminPembayaranController::class, 'struk'])->name('struk');
+        Route::get('/pesanan/{id}/struk-pdf', [StrukController::class, 'pdf'])->name('struk.pdf');
 
         // LAPORAN
-        Route::get('/laporan', [LaporanController::class, 'index'])
-            ->name('laporan');
+        Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
     });
 });

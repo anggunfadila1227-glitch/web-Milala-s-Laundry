@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Data Pesanan | Admin</title>
+@extends('layouts.admin')
 
-    {{-- Bootstrap --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+@section('content')
+
+
 
 <div class="container mt-4">
 
@@ -63,7 +58,7 @@
                                         {{ strtoupper($pesanan->metode_pembayaran) }}
                                     </small>
 
-                                @elseif (in_array($pesanan->status, ['selesai', 'diambil']))
+                                @elseif (in_array($pesanan->status, ['selesai', 'diambil','lunas']));
                                     <form action="/admin/pesanan/{{ $pesanan->id }}/bayar" method="POST">
                                         @csrf
                                         <select name="metode_pembayaran"
@@ -101,5 +96,4 @@
 
 </div>
 
-</body>
-</html>
+@endsection

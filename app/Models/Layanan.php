@@ -9,19 +9,22 @@ class Layanan extends Model
 {
     use HasFactory;
 
-    // nama tabel (opsional kalau sesuai plural)
+    // Nama tabel (opsional, tapi aman ditulis)
     protected $table = 'layanans';
 
-    // kolom yang boleh diisi
-    protected $fillable = [
+    // Kolom yang boleh diisi (WAJIB sinkron dengan controller & form)
+     protected $fillable = [
         'nama_layanan',
-        'jenis_cucian',
+        'jenis_layanan',
+        'jenis_cucian', // 🔥 WAJIB ADA
+        'deskripsi',
         'harga',
+        'status',
     ];
 
     /**
      * Relasi ke detail transaksi
-     * 1 layanan bisa dipakai di banyak transaksi
+     * 1 layanan bisa dipakai di banyak detail transaksi
      */
     public function detailTransaksis()
     {

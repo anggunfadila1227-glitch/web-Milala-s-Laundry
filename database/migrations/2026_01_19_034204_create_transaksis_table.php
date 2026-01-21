@@ -12,16 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transaksis', function (Blueprint $table) {
-        $table->id();
-        $table->string('kode_transaksi')->default('')->unique();
-        $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-        $table->date('tanggal_masuk');
-        $table->integer('total')->default(0);
-        $table->integer('bayar')->default(0);
-        $table->integer('kembalian')->default(0);
-        $table->enum('status', ['belum_bayar','lunas'])->default('belum_bayar');
-        $table->timestamps();
-    });
+            $table->id();
+            $table->string('kode_transaksi')->unique();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->date('tanggal_masuk');
+            $table->integer('total')->default(0);
+            $table->integer('bayar')->default(0);
+            $table->integer('kembalian')->default(0);
+
+            $table->enum('status', [
+                'menunggu',
+                'proses',
+                'selesai',
+                'batal'
+            ])->default('menunggu');
+
+            $table->timestamps();
+        });
     }
 
     /**

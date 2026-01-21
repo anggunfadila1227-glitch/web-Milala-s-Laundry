@@ -27,17 +27,19 @@ class PembayaranController extends Controller
     /**
      * Tandai transaksi sudah dibayar
      */
-    public function bayar($id)
-    {
-        $transaksi = Transaksi::findOrFail($id);
+ public function bayar($id)
+{
+    $transaksi = Transaksi::findOrFail($id);
 
-        // Update status jadi selesai
-        $transaksi->status = 'selesai';
-        $transaksi->save();
+    // Gunakan value ENUM yang valid
+    $transaksi->status = 'lunas';
+    $transaksi->save();
 
-        return redirect()->route('admin.pembayaran.index')
-                         ->with('success', 'Transaksi telah dibayar!');
-    }
+    return redirect()->route('admin.pembayaran.index')
+                     ->with('success', 'Pembayaran berhasil!');
+}
+
+
 
     /**
      * Tampilkan struk pembayaran (HTML)
