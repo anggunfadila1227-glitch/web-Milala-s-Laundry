@@ -1,16 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransaksiController;
-
+use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\Admin\PesananAdminController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\LayananController;
-use App\Http\Controllers\Admin\PembayaranController;
+use App\Http\Controllers\Admin\PembayaranController as AdminPembayaranController;
 use App\Http\Controllers\Admin\StrukController;
-
+use App\Http\Controllers\Admin\TransaksiController as AdminTransaksiController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
@@ -42,58 +41,71 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 */
 Route::middleware('auth')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | CUSTOMER
-    |--------------------------------------------------------------------------
-    */
+    // ================= CUSTOMER =================
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
-    Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
-    Route::get('/transaksi/create', [TransaksiController::class, 'create'])->name('transaksi.create');
-    Route::post('/transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
-    Route::get('/transaksi/{id}', [TransaksiController::class, 'show'])->name('transaksi.show');
+    /*
+    |--------------------------------------------------
+    | TRANSAKSI CUSTOMER (INI PENTING)
+    |--------------------------------------------------
+    */
+    Route::prefix('transaksi')->name('transaksi.')->group(function () {
 
+        // LIST
+        Route::get('/', [TransaksiController::class, 'index'])
+            ->name('index');
+
+        // FORM TAMBAH (DROPDOWN ADA DI SINI)
+        Route::get('/create', [TransaksiController::class, 'create'])
+            ->name('create');
+
+        // SIMPAN
+        Route::post('/', [TransaksiController::class, 'store'])
+            ->name('store');
+
+        // DETAIL
+        Route::get('/{transaksi}', [TransaksiController::class, 'show'])
+            ->name('show');
+    });
+
+    // ================= PEMBAYARAN CUSTOMER =================
     Route::get('/pembayaran', [PembayaranController::class, 'index'])
         ->name('pembayaran.index');
 
+    // ================= ADMIN =================
+    Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | ADMIN ONLY
-    |--------------------------------------------------------------------------
-    */
-    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
-
-        // DASHBOARD
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('dashboard');
 
-        // LAYANAN
+        // MASTER LAYANAN
         Route::resource('layanan', LayananController::class);
+
+        // TRANSAKSI ADMIN
+        Route::resource('transaksi', AdminTransaksiController::class);
 
         // PESANAN
         Route::get('/pesanan', [PesananAdminController::class, 'index'])
             ->name('pesanan');
 
-        Route::post('/pesanan/{id}/status',
-            [PesananAdminController::class, 'updateStatus']
-        )->name('pesanan.status');
+        Route::post('/pesanan/{id}/status', [PesananAdminController::class, 'updateStatus'])
+            ->name('pesanan.status');
 
-        // PEMBAYARAN
-        Route::get('/pembayaran', [PembayaranController::class, 'index'])
-            ->name('pembayaran');
+        // PEMBAYARAN ADMIN
+        Route::post('/pembayaran/{id}/bayar', [AdminPembayaranController::class, 'bayar'])
+            ->name('pembayaran.bayar');
+
+        Route::resource('pembayaran', AdminPembayaranController::class)
+            ->only(['index', 'show']);
 
         // STRUK
-        Route::get('/pesanan/{id}/struk',
-            [PembayaranController::class, 'struk']
-        )->name('struk');
+        Route::get('/pesanan/{id}/struk', [AdminPembayaranController::class, 'struk'])
+            ->name('struk');
 
-        Route::get('/pesanan/{id}/struk-pdf',
-            [StrukController::class, 'pdf']
-        )->name('struk.pdf');
+        Route::get('/pesanan/{id}/struk-pdf', [StrukController::class, 'pdf'])
+            ->name('struk.pdf');
 
         // LAPORAN
         Route::get('/laporan', [LaporanController::class, 'index'])

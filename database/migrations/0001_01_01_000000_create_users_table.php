@@ -11,22 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+         Schema::create('users', function (Blueprint $table) {
             $table->id();
-
-            // Data login
-            $table->string('username')->unique();
+            $table->string('username');
             $table->string('password');
-
-            // Data customer
             $table->string('name');
             $table->text('alamat')->nullable();
             $table->string('no_hp', 20)->nullable();
-
-            // Role user
             $table->enum('role', ['admin', 'customer'])->default('customer');
-
-            // Default Laravel
             $table->rememberToken();
             $table->timestamps();
         });

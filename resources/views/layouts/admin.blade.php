@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Admin Laundry</title>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     @vite('resources/css/app.css')
 </head>
@@ -42,9 +43,15 @@
                 🧾 Transaksi
             </a>
 
-            <a href="{{ route('pembayaran.index') }}"
+            {{-- ✅ FIX DI SINI --}}
+            <a href="{{ route('admin.pembayaran.index') }}"
                class="block px-4 py-2 rounded-lg hover:bg-purple-600 transition">
                 💳 Pembayaran
+            </a>
+
+            <a href="{{ route('admin.laporan') }}"
+               class="block px-4 py-2 rounded-lg hover:bg-purple-600 transition">
+                📈 Laporan
             </a>
 
         </nav>

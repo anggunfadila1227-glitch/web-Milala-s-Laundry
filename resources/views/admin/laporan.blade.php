@@ -1,29 +1,18 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Data Pesanan | Admin</title>
+@extends('layouts.admin')
 
-    {{-- Bootstrap --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+@section('content')
 
 <div class="container mt-4">
 
-    <h3 class="mb-4">📦 Data Pesanan Laundry</h3>
+    <h3 class="mb-4">📊 Laporan Transaksi Laundry</h3>
 
     {{-- Flash Message --}}
     @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     @if (session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
+        <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
     <div class="card shadow-sm">
@@ -35,62 +24,55 @@
                         <th>No</th>
                         <th>Customer</th>
                         <th>Tanggal</th>
-                        <th>Status Laundry</th>
+                        <th>Status</th>
                         <th>Total</th>
                         <th>Pembayaran</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    @forelse ($pesanans as $pesanan)
-                        <tr>
-                            <td class="text-center">{{ $loop->iteration }}</td>
-                            <td>{{ $pesanan->user->name ?? '-' }}</td>
-                            <td>{{ $pesanan->tanggal }}</td>
-                            <td class="text-center">
-                                <span class="badge bg-warning text-dark">
-                                    {{ ucfirst($pesanan->status) }}
-                                </span>
-                            </td>
-                            <td>
-                                Rp {{ number_format($pesanan->total, 0, ',', '.') }}
-                            </td>
+                @forelse ($transaksis as $transaksi)
 
-                            {{-- Pembayaran --}}
-                            <td class="text-center">
-                                @if ($pesanan->status_pembayaran === 'sudah_bayar')
-                                    <span class="badge bg-success">Sudah Dibayar</span><br>
-                                    <small class="text-muted">
-                                        {{ strtoupper($pesanan->metode_pembayaran) }}
-                                    </small>
+                    @php
+                        $total = $transaksi->details->sum(function ($d) {
+                            return ($d->harga ?? 0) * ($d->qty ?? 0);
+                        });
+                    @endphp
 
-                                @elseif (in_array($pesanan->status, ['selesai', 'diambil']))
-                                    <form action="/admin/pesanan/{{ $pesanan->id }}/bayar" method="POST">
-                                        @csrf
-                                        <select name="metode_pembayaran"
-                                                class="form-select form-select-sm mb-2"
-                                                required>
-                                            <option value="">Pilih</option>
-                                            <option value="cash">Cash</option>
-                                            <option value="qris">QRIS</option>
-                                        </select>
-                                        <button class="btn btn-sm btn-primary w-100">
-                                            Bayar
-                                        </button>
-                                    </form>
-                                @else
-                                    <span class="text-muted">Belum bisa bayar</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center text-muted">
-                                Data pesanan belum ada
-                            </td>
-                        </tr>
-                    @endforelse
+                    <tr>
+                        <td class="text-center">{{ $loop->iteration }}</td>
+                        <td>{{ $transaksi->user->name ?? '-' }}</td>
+                        <td>{{ $transaksi->created_at->format('d-m-Y') }}</td>
+                        <td class="text-center">
+                            <span class="badge bg-success">
+                                {{ $transaksi->status }}
+                            </span>
+                        </td>
+                        <td>
+                            Rp {{ number_format($total, 0, ',', '.') }}
+                        </td>
+                        <td class="text-center">
+                            {{ strtoupper($transaksi->metode_pembayaran ?? '-') }}
+                        </td>
+                    </tr>
+
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            Data transaksi belum ada
+                        </td>
+                    </tr>
+                @endforelse
                 </tbody>
             </table>
+
+            {{-- TOTAL PENDAPATAN --}}
+            <div class="text-end fw-bold mt-3">
+                Total Pendapatan :
+                <span class="text-success">
+                    Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
+                </span>
+            </div>
 
         </div>
     </div>
@@ -101,5 +83,4 @@
 
 </div>
 
-</body>
-</html>
+@endsection

@@ -3,87 +3,115 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use App\Models\Layanan;
+use App\Models\JenisCucian;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class TransaksiController extends Controller
 {
-    // menampilkan semua transaksi customer
-    public function index()
+    // ===============================
+    // LIST TRANSAKSI USER
+    // ===============================
+        
+    
+        public function index()
     {
-        $transaksis = Transaksi::with('details.layanan')
+        $transaksis = Transaksi::with([
+                'details.layanan',
+                'details.jenisCucian'
+            ])
             ->where('user_id', Auth::id())
-            ->latest()
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return view('transaksi.index', compact('transaksis'));
     }
+    
 
-    // form buat transaksi baru
+    
+
+
+
+    // ===============================
+    // FORM BUAT TRANSAKSI
+    // ===============================
     public function create()
     {
         $layanans = Layanan::all();
-        return view('transaksi.create', compact('layanans'));
+        $jenisCucians = JenisCucian::all();
+
+        return view('transaksi.create', compact('layanans', 'jenisCucians'));
     }
 
-    // simpan transaksi baru
-    public function store(Request $request)
+    // ===============================
+    // SIMPAN TRANSAKSI
+    // ===============================
+        public function store(Request $request)
     {
-        // validasi
         $request->validate([
+            'items' => 'required|array|min:1',
             'items.*.layanan_id' => 'required|exists:layanans,id',
+            'items.*.jenis_cucian_id' => 'required|exists:jenis_cucians,id',
             'items.*.qty' => 'required|numeric|min:0.1',
-            'catatan' => 'nullable|string',
         ]);
 
-        // generate kode transaksi unik
-        $kode_transaksi = 'TX-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));
-
-        // buat transaksi baru
-        $transaksi = Transaksi::create([
+        DB::beginTransaction();
+        try {
+            $transaksi = Transaksi::create([
+            'kode_transaksi' => 'TRX-' . strtoupper(Str::random(6)),
             'user_id' => Auth::id(),
-            'kode_transaksi' => $kode_transaksi,
-            'catatan' => $request->catatan ?? null,
-            'total' => 0, // sementara
+            'status' => 'menunggu',              // proses laundry
+            'status_pembayaran' => 'belum_lunas',// pembayaran
+            'total' => 0,
         ]);
 
-        $total = 0;
+            $total = 0;
 
-        // simpan detail tiap layanan
-        foreach ($request->items as $item) {
-            $layanan = Layanan::find($item['layanan_id']);
-            $qty = $item['qty'];
-            $subtotal = $layanan->harga * $qty;
+            foreach ($request->items as $item) {
 
-            DetailTransaksi::create([
-                'transaksi_id' => $transaksi->id,
-                'layanan_id' => $layanan->id,
-                'jenis_cucian' => $layanan->jenis_cucian,
-                'qty' => $qty,
-                'harga' => $layanan->harga,
-                'subtotal' => $subtotal,
-            ]);
+                $layanan = Layanan::findOrFail($item['layanan_id']);
 
-            $total += $subtotal;
+                $harga = $layanan->harga;
+                $subtotal = $item['qty'] * $harga;
+
+                DetailTransaksi::create([
+                    'id_transaksi' => $transaksi->id,
+                    'layanan_id' => $item['layanan_id'],          // ✅ FIX
+                    'jenis_cucian_id' => $item['jenis_cucian_id'],// ✅ FIX
+                    'qty' => $item['qty'],                        // ✅ FIX
+                    'harga' => $harga,
+                    'subtotal' => $subtotal,
+                ]);
+
+                $total += $subtotal;
+            }
+
+            $transaksi->update(['total' => $total]);
+
+            DB::commit();
+            return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors($e->getMessage());
         }
-
-        // update total transaksi
-        $transaksi->update(['total' => $total]);
-
-        return redirect()->route('transaksi.index')
-            ->with('success', 'Transaksi berhasil dibuat!');
     }
 
-    // tampilkan detail transaksi
-    public function show($id)
-    {
-        $transaksi = Transaksi::with('details.layanan')
-            ->where('user_id', Auth::id())
-            ->findOrFail($id);
+        // ===============================
+        // DETAIL TRANSAKSI
+        // ===============================
+        public function show($id)
+        {
+            $transaksi = Transaksi::with([
+                    'details.layanan',
+                    'details.jenisCucian'
+                ])
+                ->where('user_id', Auth::id())
+                ->findOrFail($id);
 
-        return view('transaksi.show', compact('transaksi'));
+            return view('transaksi.show', compact('transaksi'));
+        }
     }
-}

@@ -29,7 +29,12 @@
     <!-- Ringkasan Transaksi Terbaru -->
     <div class="mt-10">
         <h2 class="text-2xl font-semibold mb-4">Transaksi Terbaru</h2>
-        @if(auth()->user()->teransaksi->count() > 0)
+
+        @php
+            $latestTransaksis = auth()->user()->transaksis()->with('details.layanan')->latest()->take(5)->get();
+        @endphp
+
+        @if($latestTransaksis->count() > 0)
             <table class="min-w-full bg-white rounded-lg shadow overflow-hidden">
                 <thead class="bg-gray-100 border-b">
                     <tr>
@@ -41,16 +46,42 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach(auth()->user()->transaksi()->latest()->take(5)->get() as $index => $transaksi)
+                    @foreach($latestTransaksis as $index => $transaksi)
                     <tr class="border-b hover:bg-gray-50">
                         <td class="py-2 px-4">{{ $index + 1 }}</td>
-                        <td class="py-2 px-4">{{ $transaksi->layanan->nama ?? '-' }}</td>
+
+                        <!-- Layanan: gabungkan semua detail -->
                         <td class="py-2 px-4">
-                            <span class="px-2 py-1 rounded {{ $transaksi->status == 'selesai' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800' }}">
+                            @if($transaksi->details->count() > 0)
+                                @foreach($transaksi->details as $detail)
+                                    {{ $detail->layanan->nama_layanan ?? '-' }}
+                                    @if(!$loop->last), @endif
+                                @endforeach
+                            @else
+                                -
+                            @endif
+                        </td>
+
+                        <!-- Status -->
+                        <td class="py-2 px-4">
+                            @php
+                                $statusColors = [
+                                    'menunggu' => 'bg-yellow-200 text-yellow-800',
+                                    'proses' => 'bg-blue-200 text-blue-800',
+                                    'selesai' => 'bg-green-200 text-green-800',
+                                    'batal' => 'bg-red-200 text-red-800'
+                                ];
+                                $statusClass = $statusColors[$transaksi->status] ?? 'bg-gray-200 text-gray-800';
+                            @endphp
+                            <span class="px-2 py-1 rounded {{ $statusClass }}">
                                 {{ ucfirst($transaksi->status) }}
                             </span>
                         </td>
-                        <td class="py-2 px-4">Rp {{ number_format($transaksi->total,0,",",".") }}</td>
+
+                        <!-- Total -->
+                        <td class="py-2 px-4">Rp {{ number_format($transaksi->total ?? 0,0,",",".") }}</td>
+
+                        <!-- Tanggal -->
                         <td class="py-2 px-4">{{ $transaksi->created_at->format('d M Y') }}</td>
                     </tr>
                     @endforeach

@@ -17,15 +17,17 @@
         }
         hr {
             border-top: 1px dashed #000;
+            margin: 8px 0;
         }
         table {
             width: 100%;
+            border-collapse: collapse;
         }
         td {
             padding: 2px 0;
         }
         .btn-print {
-            margin-top: 10px;
+            margin-top: 12px;
             width: 100%;
             padding: 6px;
             cursor: pointer;
@@ -36,19 +38,23 @@
 
 <div class="struk">
 
+    @php
+        $total = 0;
+    @endphp
+
     {{-- LOGO --}}
     <div class="center">
-        <img src="{{ images('logo-register.png') }}" width="70">
+        <img src="{{ asset('images/logo-register.png') }}" width="70" alt="Logo">
         <h3>WEB LAUNDRY</h3>
-        <small>Jl.Watudakon No. 123</small>
+        <small>Jl. Watudakon No. 123</small>
     </div>
 
     <hr>
 
     {{-- INFO STRUK --}}
     <p>
-        <strong>No Struk:</strong> {{ $pesanan->no_struk }} <br>
-        <strong>Tanggal:</strong> {{ $pesanan->tanggal ?? now()->format('d-m-Y') }}
+        <strong>No Struk:</strong> {{ $transaksi->kode_transaksi }}<br>
+        <strong>Tanggal:</strong> {{ $transaksi->created_at->format('d-m-Y H:i') }}
     </p>
 
     <hr>
@@ -56,26 +62,44 @@
     {{-- DATA CUSTOMER --}}
     <p>
         <strong>Customer:</strong><br>
-        {{ $pesanan->user->name }}<br>
-        {{ $pesanan->user->email }}
+        {{ $transaksi->user->name ?? '-' }}<br>
+        {{ $transaksi->user->email ?? '-' }}
     </p>
 
     <hr>
 
-    {{-- DETAIL LAUNDRY --}}
+    {{-- DETAIL LAYANAN --}}
     <table>
-        <tr>
-            <td>Jenis Laundry</td>
-            <td align="right">{{ $pesanan->jenis_laundry }}</td>
-        </tr>
-        <tr>
-            <td>Berat</td>
-            <td align="right">{{ $pesanan->berat }} Kg</td>
-        </tr>
-        <tr>
-            <td>Harga / Kg</td>
-            <td align="right">Rp {{ number_format($pesanan->harga,0,',','.') }}</td>
-        </tr>
+        @forelse ($transaksi->details as $item)
+
+            @php
+                $qty = $item->qty ?? 0;
+                $harga = $item->harga ?? 0;
+                $subtotal = $item->subtotal ?? ($qty * $harga);
+                $total += $subtotal;
+            @endphp
+
+            <tr>
+                <td colspan="2">
+                    {{ $item->layanan->nama_layanan ?? 'Layanan tidak ditemukan' }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{ $qty }} x Rp {{ number_format($harga,0,',','.') }}
+                </td>
+                <td align="right">
+                    Rp {{ number_format($subtotal,0,',','.') }}
+                </td>
+            </tr>
+
+        @empty
+            <tr>
+                <td colspan="2" class="center">
+                    <em>Tidak ada layanan</em>
+                </td>
+            </tr>
+        @endforelse
     </table>
 
     <hr>
@@ -85,33 +109,28 @@
         <tr>
             <td><strong>Total</strong></td>
             <td align="right">
-                <strong>Rp {{ number_format($pesanan->total,0,',','.') }}</strong>
+                <strong>Rp {{ number_format($total,0,',','.') }}</strong>
             </td>
         </tr>
         <tr>
             <td>Metode Bayar</td>
-            <td align="right">{{ strtoupper($pesanan->metode_pembayaran) }}</td>
+            <td align="right">
+                {{ strtoupper($transaksi->metode_pembayaran ?? '-') }}
+            </td>
         </tr>
         <tr>
             <td>Status</td>
-            <td align="right">{{ $pesanan->status_pembayaran }}</td>
+            <td align="right">
+                {{ strtoupper($transaksi->status ?? '-') }}
+            </td>
         </tr>
     </table>
 
     <hr>
 
-    {{-- QR CODE --}}
-    <div class="center">
-        {!! QrCode::size(80)->generate($pesanan->no_struk) !!}
-        <br>
-        <small>Scan untuk verifikasi</small>
-    </div>
-
-    <hr>
-
     <p class="center">
         Terima kasih 🙏<br>
-        Laundry Anda telah selesai
+        Laundry Anda telah diterima
     </p>
 
     {{-- TOMBOL PRINT --}}

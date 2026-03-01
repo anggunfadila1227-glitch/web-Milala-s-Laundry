@@ -3,23 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Layanan;
+use Illuminate\Http\Request;
 
 class LayananController extends Controller
 {
     /**
-     * Tampilkan semua layanan
+     * LIST DATA LAYANAN
      */
     public function index()
     {
-        $layanans = Layanan::orderBy('created_at', 'desc')->get();
-
+        $layanans = Layanan::latest()->get();
         return view('admin.layanan.index', compact('layanans'));
     }
 
     /**
-     * Form tambah layanan
+     * FORM TAMBAH LAYANAN
      */
     public function create()
     {
@@ -27,21 +26,20 @@ class LayananController extends Controller
     }
 
     /**
-     * Simpan layanan baru
+     * SIMPAN LAYANAN BARU
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_layanan'  => 'required|string|max:100',
-            'jenis_cucian'  => 'required|string|max:100',
-            'harga'         => 'required|numeric|min:0',
+        $validated = $request->validate([
+            'nama_layanan' => 'required|string|max:255',
+            'jenis_cucian' => 'required|string',
+            'jenis_layanan' => 'required|string',
+            'harga'        => 'required|numeric',
+            'status'       => 'required|string',
+            'deskripsi'    => 'nullable|string',
         ]);
 
-        Layanan::create([
-            'nama_layanan' => $request->nama_layanan,
-            'jenis_cucian' => $request->jenis_cucian,
-            'harga'        => $request->harga,
-        ]);
+        Layanan::create($validated);
 
         return redirect()
             ->route('admin.layanan.index')
@@ -49,33 +47,28 @@ class LayananController extends Controller
     }
 
     /**
-     * Form edit layanan
+     * FORM EDIT LAYANAN
      */
-    public function edit($id)
+    public function edit(Layanan $layanan)
     {
-        $layanan = Layanan::findOrFail($id);
-
         return view('admin.layanan.edit', compact('layanan'));
     }
 
     /**
-     * Update layanan
+     * UPDATE DATA LAYANAN
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Layanan $layanan)
     {
-        $request->validate([
-            'nama_layanan' => 'required|string|max:100',
-            'jenis_cucian' => 'required|string|max:100',
-            'harga'        => 'required|numeric|min:0',
-        ]);
+        $validated = $request->validate([
+        'nama_layanan' => 'required|string|max:255',
+        'jenis_cucian' => 'required|string',
+        'jenis_layanan' => 'required|string', 
+        'harga'        => 'required|numeric',
+        'status'       => 'required|string',
+        'deskripsi'    => 'nullable|string',
+    ]);
 
-        $layanan = Layanan::findOrFail($id);
-
-        $layanan->update([
-            'nama_layanan' => $request->nama_layanan,
-            'jenis_cucian' => $request->jenis_cucian,
-            'harga'        => $request->harga,
-        ]);
+        $layanan->update($validated);
 
         return redirect()
             ->route('admin.layanan.index')
@@ -83,11 +76,10 @@ class LayananController extends Controller
     }
 
     /**
-     * Hapus layanan
+     * HAPUS LAYANAN
      */
-    public function destroy($id)
+    public function destroy(Layanan $layanan)
     {
-        $layanan = Layanan::findOrFail($id);
         $layanan->delete();
 
         return redirect()

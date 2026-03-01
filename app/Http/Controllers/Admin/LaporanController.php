@@ -3,15 +3,28 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Pesanan;
+use App\Models\Transaksi;
 
 class LaporanController extends Controller
 {
     public function index()
     {
-        $pesanans = Pesanan::orderBy('tanggal_masuk', 'desc')->get();
-        $totalPendapatan = Pesanan::sum('total');
+        // Ambil transaksi yang sudah LUNAS
+        $transaksis = Transaksi::with(['user', 'details'])
+            ->where('status', 'LUNAS')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        return view('admin.laporan', compact('pesanans', 'totalPendapatan'));
+        // Hitung total pendapatan dari detail transaksi
+        $totalPendapatan = $transaksis->sum(function ($transaksi) {
+            return $transaksi->details->sum(function ($detail) {
+                return ($detail->harga ?? 0) * ($detail->qty ?? 0);
+            });
+        });
+
+        return view('admin.laporan', compact(
+            'transaksis',
+            'totalPendapatan'
+        ));
     }
 }

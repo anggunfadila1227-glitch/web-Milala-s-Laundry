@@ -41,11 +41,7 @@
 
             </div>
 
-            <!-- PEMBAYARAN -->
-            <a href="{{ route('pembayaran.index') }}"
-               class="block px-4 py-3 rounded-xl hover:bg-purple-100 font-semibold text-gray-700">
-                💳 Pembayaran
-            </a>
+            
 
         </nav>
 

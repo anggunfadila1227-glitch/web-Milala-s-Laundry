@@ -2,38 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Transaksi;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    /**
-     * Menampilkan dashboard customer.
-     *
-     * @return \Illuminate\View\View
-     */
     public function index()
-    
     {
-        $user = Auth::user();
+        $transaksis = Transaksi::with([
+            'user',
+            'details.layanan' 
+            ])
+            ->withCount('details')
+            ->where('user_id', Auth::id())
+            ->orderByDesc('created_at')
+            ->paginate(10);
 
-        // =====================
-        // JIKA ADMIN
-        // =====================
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-
-
-
-        // Ambil semua transaksi milik user yang login, beserta detail & layanan
-        $transaksis = Transaksi::with('details.layanan')
-                        ->where('user_id', Auth::id())
-                        ->orderBy('created_at', 'desc')
-                        ->get();
-
-        // Kirim data ke view customer.dashboard
-        return view('customer.dashboard', compact('transaksis'));
+        return view('dashboard', [
+            'transaksis'     => $transaksis,
+            'countMenunggu'  => $transaksis->where('status', 'menunggu')->count(),
+            'countProses'    => $transaksis->where('status', 'proses')->count(),
+            'countSelesai'   => $transaksis->where('status', 'selesai')->count(),
+            'countBatal'     => $transaksis->where('status', 'batal')->count(),
+        ]);
     }
 }
