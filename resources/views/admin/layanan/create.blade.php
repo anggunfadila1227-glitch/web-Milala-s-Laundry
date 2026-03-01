@@ -22,12 +22,18 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-1">
                         Nama Layanan
                     </label>
+<<<<<<< HEAD
                     <input type="text"
                         name="nama_layanan"
                         value="{{ old('nama_layanan') }}"
                         placeholder="Contoh: Cuci Sepatu"
                         class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500"
                         required>
+=======
+                    <input type="text" name="nama_layanan" value="{{ old('nama_layanan') }}"
+                        placeholder="Contoh: Cuci Sepatu"
+                        class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500" required>
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
                 </div>
 
                 {{-- JENIS LAYANAN --}}
@@ -36,6 +42,7 @@
                         Jenis Layanan
                     </label>
                     <select name="jenis_layanan"
+<<<<<<< HEAD
                         class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500"
                         required>
                         <option value="">-- Pilih Jenis Layanan --</option>
@@ -49,10 +56,38 @@
                 </div>
 
                 {{-- ✅ JENIS CUCIAN (INI YANG HILANG) --}}
+=======
+                        class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500" required>
+                        <option value="">-- Pilih Jenis Layanan --</option>
+
+                        <option value="baju" {{ old('jenis_layanan') == 'baju' ? 'selected' : '' }}>
+                            Baju
+                        </option>
+                        <option value="seragam" {{ old('jenis_layanan') == 'seragam' ? 'selected' : '' }}>
+                            Seragam
+                        </option>
+                        <option value="bedcover" {{ old('jenis_layanan') == 'bedcover' ? 'selected' : '' }}>
+                            Bedcover
+                        </option>
+                        <option value="karpet" {{ old('jenis_layanan') == 'karpet' ? 'selected' : '' }}>
+                            Karpet
+                        </option>
+                        <option value="sepatu" {{ old('jenis_layanan') == 'sepatu' ? 'selected' : '' }}>
+                            Sepatu
+                        </option>
+                        <option value="selimut" {{ old('jenis_layanan') == 'selimut' ? 'selected' : '' }}>
+                            Selimut
+                        </option>
+                    </select>
+                </div>
+
+                {{-- JENIS CUCIAN --}}
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">
                         Jenis Cucian
                     </label>
+<<<<<<< HEAD
                     <select name="jenis_cucian"
                         class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500"
                         required>
@@ -65,14 +100,35 @@
                     </select>
                 </div>
 
+=======
+
+                    <select name="jenis_cucian"
+                        class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500" required>
+                        <option value="">-- Pilih Jenis Cucian --</option>
+
+                        <option value="reguler">Reguler</option>
+                        <option value="kering">Kering</option>
+                        <option value="setrika">Setrika</option>
+                        <option value="cuci_setrika">Cuci + Setrika</option>
+                        <option value="express">Express</option>
+
+                    </select>
+                </div>
+
+
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
                 {{-- DESKRIPSI --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">
                         Deskripsi
                     </label>
+<<<<<<< HEAD
                     <textarea name="deskripsi"
                         rows="4"
                         placeholder="Deskripsi layanan..."
+=======
+                    <textarea name="deskripsi" rows="4" placeholder="Deskripsi layanan..."
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
                         class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500">{{ old('deskripsi') }}</textarea>
                 </div>
 
@@ -81,12 +137,17 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-1">
                         Harga (Rp)
                     </label>
+<<<<<<< HEAD
                     <input type="number"
                         name="harga"
                         value="{{ old('harga') }}"
                         placeholder="Contoh: 15000"
                         class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500"
                         required>
+=======
+                    <input type="number" name="harga" value="{{ old('harga') }}" placeholder="Contoh: 15000"
+                        class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500" required>
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
                 </div>
 
                 {{-- STATUS --}}
@@ -103,6 +164,7 @@
 
                 {{-- BUTTON --}}
                 <div class="flex justify-between items-center pt-4">
+<<<<<<< HEAD
                     <a href="{{ route('admin.layanan.index') }}"
                         class="text-gray-600 hover:text-gray-800 font-medium">
                         ← Kembali
@@ -110,6 +172,14 @@
 
                     <button type="submit"
                         class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+=======
+                    <a href="{{ route('admin.layanan.index') }}" class="text-gray-600 hover:text-gray-800 font-medium">
+                        ← Kembali
+                    </a>
+
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white
+                                       px-6 py-2 rounded-lg font-semibold transition">
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
                         💾 Simpan Layanan
                     </button>
                 </div>
@@ -117,4 +187,8 @@
             </form>
         </div>
     </div>
+<<<<<<< HEAD
 @endsection
+=======
+@endsection
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6

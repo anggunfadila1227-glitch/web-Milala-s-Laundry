@@ -8,7 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+<<<<<<< HEAD
         Schema::create('transaksi_details', function (Blueprint $table) {
+=======
+        Schema::create('detail_transaksi', function (Blueprint $table) {
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
             $table->id();
             $table->foreignId('id_transaksi')->constrained('transaksis')->onDelete('cascade');
             $table->string('keterangan'); // nama layanan atau item

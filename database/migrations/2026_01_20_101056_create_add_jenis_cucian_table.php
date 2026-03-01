@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('add_jenis_cucian', function (Blueprint $table) {
             $table->id(); // id auto increment
+<<<<<<< HEAD
             $table->string('nama')->unique()->comment('Nama jenis cucian, misal: reguler, express'); 
+=======
+            $table->string('nama')->unique()->comment('Nama jenis cucian, misal: Baju, Celana'); 
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
             $table->timestamps(); // created_at & updated_at
         });
     }

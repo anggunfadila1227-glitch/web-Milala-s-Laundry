@@ -66,6 +66,7 @@
                 </div>
             @endif
 
+<<<<<<< HEAD
             <form action="{{ route('admin.layanan.update', $layanan->id) }}" method="POST" class="space-y-5">
                 @csrf
                 @method('PUT')
@@ -175,6 +176,94 @@
                     </button>
                 </div>
             </form>
+=======
+           <form action="{{ route('admin.layanan.update', $layanan->id) }}" method="POST" class="space-y-5">
+    @csrf
+    @method('PUT')
+
+    {{-- NAMA LAYANAN --}}
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">
+            Nama Layanan
+        </label>
+        <input type="text"
+               name="nama_layanan"
+               value="{{ old('nama_layanan', $layanan->nama_layanan) }}"
+               class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+               required>
+    </div>
+
+    {{-- HARGA --}}
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">
+            Harga (Rp)
+        </label>
+        <input type="number"
+               name="harga"
+               value="{{ old('harga', $layanan->harga) }}"
+               class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+               required>
+    </div>
+
+    {{-- JENIS CUCIAN --}}
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">
+            Jenis Cucian
+        </label>
+
+        @php
+            $selectedJenis = old('jenis_cucian', $layanan->jenis_cucian);
+        @endphp
+
+        <select name="jenis_cucian"
+                class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+                required>
+            <option value="">-- Pilih Jenis Cucian --</option>
+            <option value="reguler" {{ $selectedJenis == 'reguler' ? 'selected' : '' }}>Reguler</option>
+            <option value="kering" {{ $selectedJenis == 'kering' ? 'selected' : '' }}>Kering</option>
+            <option value="setrika" {{ $selectedJenis == 'setrika' ? 'selected' : '' }}>Setrika</option>
+            <option value="cuci_setrika" {{ $selectedJenis == 'cuci_setrika' ? 'selected' : '' }}>Cuci + Setrika</option>
+            <option value="express" {{ $selectedJenis == 'express' ? 'selected' : '' }}>Express</option>
+        </select>
+    </div>
+
+    {{-- STATUS --}}
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">
+            Status
+        </label>
+        <select name="status"
+                class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500"
+                required>
+            <option value="aktif" {{ old('status', $layanan->status) == 'aktif' ? 'selected' : '' }}>Aktif</option>
+            <option value="nonaktif" {{ old('status', $layanan->status) == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+        </select>
+    </div>
+
+    {{-- DESKRIPSI --}}
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">
+            Deskripsi
+        </label>
+        <textarea name="deskripsi"
+                  rows="4"
+                  class="w-full rounded-lg border-gray-300 focus:ring-purple-500 focus:border-purple-500">{{ old('deskripsi', $layanan->deskripsi) }}</textarea>
+    </div>
+
+    {{-- BUTTON --}}
+    <div class="flex justify-between items-center pt-4">
+        <a href="{{ route('admin.layanan.index') }}"
+           class="text-gray-600 hover:text-gray-800 font-medium">
+            ← Kembali
+        </a>
+
+        <button type="submit"
+                class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+            Update Layanan
+        </button>
+    </div>
+</form>
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
 
         </div>
     </div>

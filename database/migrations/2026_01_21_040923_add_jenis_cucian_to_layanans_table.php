@@ -11,14 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jenis_cucians', function (Blueprint $table) {
-            $table->id();
-<<<<<<< HEAD
-            // PERBAIKAN UTAMA: Tambahkan kolom nama_jenis
-            $table->string('nama_jenis')->unique(); 
-=======
->>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
-            $table->timestamps();
+        Schema::table('layanans', function (Blueprint $table) {
+            //
         });
     }
 
@@ -27,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jenis_cucians');
+        Schema::table('layanans', function (Blueprint $table) {
+            //
+        });
     }
 };

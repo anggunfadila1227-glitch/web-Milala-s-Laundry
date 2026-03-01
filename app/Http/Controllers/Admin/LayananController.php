@@ -9,16 +9,32 @@ use Illuminate\Http\Request;
 class LayananController extends Controller
 {
     /**
+<<<<<<< HEAD
      * LIST DATA LAYANAN
+=======
+     * ==========================
+     * TAMPILKAN DATA LAYANAN
+     * ==========================
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
      */
     public function index()
     {
         $layanans = Layanan::latest()->get();
+<<<<<<< HEAD
+=======
+
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
         return view('admin.layanan.index', compact('layanans'));
     }
 
     /**
+<<<<<<< HEAD
      * FORM TAMBAH LAYANAN
+=======
+     * ==========================
+     * FORM TAMBAH LAYANAN
+     * ==========================
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
      */
     public function create()
     {
@@ -26,6 +42,7 @@ class LayananController extends Controller
     }
 
     /**
+<<<<<<< HEAD
      * SIMPAN LAYANAN BARU
      */
     public function store(Request $request)
@@ -40,6 +57,30 @@ class LayananController extends Controller
         ]);
 
         Layanan::create($validated);
+=======
+     * ==========================
+     * SIMPAN DATA
+     * ==========================
+     */
+    public function store(Request $request)
+    {
+$request->validate([
+    'nama_layanan' => 'required|string',
+    'jenis_layanan' => 'required|string',
+    'jenis_cucian' => 'required|string',
+    'harga' => 'required|numeric',
+    'status' => 'required'
+]);
+
+Layanan::create([
+    'nama_layanan'   => $request->nama_layanan,
+    'jenis_layanan'  => $request->jenis_layanan, // ✅ WAJIB
+    'jenis_cucian'   => $request->jenis_cucian,
+    'harga'          => $request->harga,
+    'status'         => $request->status,
+]);
+
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
 
         return redirect()
             ->route('admin.layanan.index')
@@ -47,7 +88,13 @@ class LayananController extends Controller
     }
 
     /**
+<<<<<<< HEAD
      * FORM EDIT LAYANAN
+=======
+     * ==========================
+     * FORM EDIT
+     * ==========================
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
      */
     public function edit(Layanan $layanan)
     {
@@ -55,6 +102,7 @@ class LayananController extends Controller
     }
 
     /**
+<<<<<<< HEAD
      * UPDATE DATA LAYANAN
      */
     public function update(Request $request, Layanan $layanan)
@@ -69,6 +117,27 @@ class LayananController extends Controller
     ]);
 
         $layanan->update($validated);
+=======
+     * ==========================
+     * UPDATE DATA
+     * ==========================
+     */
+    public function update(Request $request, Layanan $layanan)
+    {
+        $request->validate([
+            'nama_layanan'  => 'required|string|max:100',
+            'jenis_cucian'  => 'required|string|max:50',
+            'harga'         => 'required|numeric|min:0',
+            'status'        => 'required|in:aktif,nonaktif',
+        ]);
+
+        $layanan->update([
+            'nama_layanan' => $request->nama_layanan,
+            'jenis_cucian' => $request->jenis_cucian,
+            'harga'        => $request->harga,
+            'status'       => $request->status,
+        ]);
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
 
         return redirect()
             ->route('admin.layanan.index')
@@ -76,7 +145,13 @@ class LayananController extends Controller
     }
 
     /**
+<<<<<<< HEAD
      * HAPUS LAYANAN
+=======
+     * ==========================
+     * HAPUS DATA
+     * ==========================
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
      */
     public function destroy(Layanan $layanan)
     {

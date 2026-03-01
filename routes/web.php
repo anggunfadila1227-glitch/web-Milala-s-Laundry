@@ -3,11 +3,19 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransaksiController;
+<<<<<<< HEAD
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\Admin\PesananAdminController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\LayananController;
 use App\Http\Controllers\Admin\PembayaranController as AdminPembayaranController;
+=======
+use App\Http\Controllers\PembayaranController; // Controller customer
+use App\Http\Controllers\Admin\PesananAdminController;
+use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\LayananController;
+use App\Http\Controllers\Admin\PembayaranController as AdminPembayaranController; // Controller admin
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
 use App\Http\Controllers\Admin\StrukController;
 use App\Http\Controllers\Admin\TransaksiController as AdminTransaksiController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -42,6 +50,7 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 Route::middleware('auth')->group(function () {
 
     // ================= CUSTOMER =================
+<<<<<<< HEAD
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
@@ -51,6 +60,12 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------
     */
     Route::prefix('transaksi')->name('transaksi.')->group(function () {
+=======
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::resource('transaksi', TransaksiController::class)
+        ->only(['index', 'create', 'store', 'show']);
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
 
         // LIST
         Route::get('/', [TransaksiController::class, 'index'])
@@ -76,15 +91,24 @@ Route::middleware('auth')->group(function () {
     // ================= ADMIN =================
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
+<<<<<<< HEAD
+=======
+        // DASHBOARD ADMIN
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('dashboard');
 
+<<<<<<< HEAD
         // MASTER LAYANAN
+=======
+        // LAYANAN ADMIN (FULL CRUD)
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
         Route::resource('layanan', LayananController::class);
 
         // TRANSAKSI ADMIN
         Route::resource('transaksi', AdminTransaksiController::class);
+<<<<<<< HEAD
 
         // PESANAN
         Route::get('/pesanan', [PesananAdminController::class, 'index'])
@@ -106,9 +130,31 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/pesanan/{id}/struk-pdf', [StrukController::class, 'pdf'])
             ->name('struk.pdf');
+=======
+
+        // PESANAN ADMIN
+        Route::get('/pesanan', [PesananAdminController::class, 'index'])->name('pesanan');
+        Route::post('/pesanan/{id}/status', [PesananAdminController::class, 'updateStatus'])->name('pesanan.status');
+
+        // PEMBAYARAN ADMIN
+        // 1️⃣ POST route bayar transaksi harus sebelum resource
+        Route::post('/pembayaran/{id}/bayar', [AdminPembayaranController::class, 'bayar'])
+            ->name('pembayaran.bayar');
+
+        // 2️⃣ Resource pembayaran (hanya index & show)
+        Route::resource('pembayaran', AdminPembayaranController::class)
+            ->only(['index', 'show'])
+            ->names([
+                'index' => 'pembayaran.index',
+                'show'  => 'pembayaran.show',
+            ]);
+
+        // STRUK
+        Route::get('/pesanan/{id}/struk', [AdminPembayaranController::class, 'struk'])->name('struk');
+        Route::get('/pesanan/{id}/struk-pdf', [StrukController::class, 'pdf'])->name('struk.pdf');
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
 
         // LAPORAN
-        Route::get('/laporan', [LaporanController::class, 'index'])
-            ->name('laporan');
+        Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
     });
 });

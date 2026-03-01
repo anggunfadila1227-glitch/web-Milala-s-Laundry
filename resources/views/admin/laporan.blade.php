@@ -1,6 +1,13 @@
 @extends('layouts.admin')
+<<<<<<< HEAD
 
 @section('content')
+=======
+
+@section('content')
+
+
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
 
 <div class="container mt-4">
 
@@ -39,6 +46,7 @@
                         });
                     @endphp
 
+<<<<<<< HEAD
                     <tr>
                         <td class="text-center">{{ $loop->iteration }}</td>
                         <td>{{ $transaksi->user->name ?? '-' }}</td>
@@ -63,6 +71,34 @@
                         </td>
                     </tr>
                 @endforelse
+=======
+                                @elseif (in_array($pesanan->status, ['selesai', 'diambil','lunas']));
+                                    <form action="/admin/pesanan/{{ $pesanan->id }}/bayar" method="POST">
+                                        @csrf
+                                        <select name="metode_pembayaran"
+                                                class="form-select form-select-sm mb-2"
+                                                required>
+                                            <option value="">Pilih</option>
+                                            <option value="cash">Cash</option>
+                                            <option value="qris">QRIS</option>
+                                        </select>
+                                        <button class="btn btn-sm btn-primary w-100">
+                                            Bayar
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="text-muted">Belum bisa bayar</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">
+                                Data pesanan belum ada
+                            </td>
+                        </tr>
+                    @endforelse
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
                 </tbody>
             </table>
 
@@ -83,4 +119,8 @@
 
 </div>
 
+<<<<<<< HEAD
 @endsection
+=======
+@endsection
+>>>>>>> e999c14f69206e4aa972ca0970161628359b90e6
